@@ -65,7 +65,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="addUserLabel">Nuovo Bene</h1>
+        <h1 class="modal-title fs-5" id="addUserLabel">Nuovo Veicolo</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -74,10 +74,10 @@
             <label for="inputname" class="col-form-label">Tipologia:</label>
             <select class="form-select" aria-label="Default select example">
               <option selected>Seleziona</option>
-              <option value="1">Monitor</option>
-              <option value="2">Laptop</option>
-              <option value="3">PC Fisso</option>
-              <option value="4">Smartphone</option>
+              <option value="1">Furgone</option>
+              <option value="2">Autovettura</option>
+              <option value="3">Camion</option>
+              <option value="4">Ciclomotore</option>
               <option value="5">Altro</option>
             </select>
           </div>
@@ -90,7 +90,7 @@
             <input type="text" class="form-control" id="inputcf">
           </div>
           <div class="mb-3">
-            <label for="inputnascita" class="col-form-label">S.N.:</label>
+            <label for="inputnascita" class="col-form-label">Targa:</label>
             <input type="text" class="form-control" id="inputnascita">
           </div>
         </form>
@@ -109,7 +109,7 @@
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="viewGestElLabel">
           <i class="fa-solid fa-user-plus"></i> 
-          Gestisci beni assegnati al dipendente</h1>
+          Gestisci Beni assegnati al dipendente</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -124,7 +124,7 @@
             <div class="col-md-7 ms-auto hide" id="monitor-good">
              <button type="button" class="btn btn-sm btn-outline-secondary" id="start-add-good-to-employee" onClick="goodAssingenedStep1()">
               <i class="fa-solid fa-user-plus"></i>
-              Assegna bene
+              Assegna Bene
             </button>
             <select class="form-select hide" id="tipologia-add-to-employee" onChange="goodAssingenedStep2()">
               <option selected>Seleziona Tipologia</option>
