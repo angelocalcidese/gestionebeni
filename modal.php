@@ -1,5 +1,5 @@
 <div class="modal fade" id="addGood" tabindex="-1" aria-labelledby="addGoodLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="addGoodLabel">Creazione Nuovo Bene</h1>
@@ -12,6 +12,16 @@
                     <div class=" container">
                         <div class="row">
                             <div class="col">
+                                <div class="mb-3">
+                                    <label for="input-stato" class="col-form-label">Stato:</label>
+                                    <select class="form-select input-data" id="input-stato">
+                                        <option value="" selected>Seleziona</option>
+                                        <option value="Attivo">Attivo</option>
+                                        <option value="Guasto">Guasto</option>
+                                        <option value="Dismesso/venduto">Dismesso/venduto</option>
+                                    </select>
+                                </div>
+
                                 <div class="mb-3">
                                     <label for="input-categoria" class="col-form-label">Categoria:</label>
                                     <select class="form-select input-data" onchange="activeOtherCat()" id="input-categoria">
@@ -50,162 +60,141 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="input-dataacquisto" class="col-form-label">Data d'acquisto</label>
-                                    <input type="text" class="form-control input-data" id="input-dataacquisto">
+                                    <input type="text" class="form-control format-data input-data" maxlength="10" id="input-dataacquisto">
                                 </div>
+                            </div>
+                            <div class="col">
+                                <div class="mb-3">
+                                    <label for="input-assegnatoa" class="col-form-label">Assegna a:</label>
+                                    <select class="form-select input-data" id="input-assegnatoa">
+                                        <option value="" selected>Non Assegnato</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="input-dataassegnazione" class="col-form-label">Data assegnazione</label>
+                                    <input type="text" class="form-control format-data input-data" maxlength="10" id="input-dataassegnazione">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="input-valoreacquisto" class="col-form-label">Valore d'acquisto (euro):</label>
+                                    <input type="text" class="form-control numberInput input-data" id="input-valoreacquisto">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="mb-3">
+                                <label for="input-note" class="form-label">Note:</label>
+                                <textarea class="form-control" id="input-note" rows="4" maxlength="3000"></textarea>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary"  onclick="closeModal()">Chiudi</button>
-                <button type="button" class="btn btn-primary" id="add-button" onclick="controlForm()">Crea</button>
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Chiudi</button>
+                <button type="button" class="btn btn-primary" id="add-button" onclick="controlForm()">Invia</button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade" id="viewGestEl" tabindex="-1" aria-labelledby="viewGestElLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+
+<div class="modal fade" id="viewListEl" tabindex="-1" aria-labelledby="viewListElLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="viewGestElLabel">
-                    <i class="fa-solid fa-user-plus"></i>
-                    Gestisci Beni assegnati al dipendente
+                <h1 class="modal-title fs-5" id="viewListElLabel">
+                    <span id="titolo-bene">Assegnatari Bene</span>
                 </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <label>Seleziona un Dipendente</label>
-                            <select class="form-select" id="user-gest" onChange="openListGoods()">
-                                <option selected>Seleziona</option>
-                            </select>
+                    <div class="alert alert-primary hide" id="alert-success-guida" role="alert"></div>
+                    <div class="alert alert-danger hide" id="alert-error-guida" role="alert"></div>
+                    <div id="view-assign">
+
+                        <div class="row">
+
+
+                            <div class="col-md ms-auto " id="monitor-good">
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Assegnato dal</th>
+                                            <th scope="col">restituito il </th>
+                                            <th scope="col">Dipendente</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="bodyGuida">
+
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="col-md-7 ms-auto hide" id="monitor-good">
-                            <button type="button" class="btn btn-sm btn-outline-secondary" id="start-add-good-to-employee" onClick="goodAssingenedStep1()">
-                                <i class="fa-solid fa-user-plus"></i>
-                                Assegna Bene
-                            </button>
-                            <select class="form-select hide" id="tipologia-add-to-employee" onChange="goodAssingenedStep2()">
-                                <option selected>Seleziona Tipologia</option>
-                                <option value="1">Monitor</option>
-                                <option value="2">Laptop</option>
-                                <option value="3">PC Fisso</option>
-                                <option value="4">Smartphone</option>
-                                <option value="5">Altro</option>
-                            </select>
-                            <table class="table hide" id="add-good-to-employee">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Tipologia</th>
-                                        <th scope="col">Marca</th>
-                                        <th scope="col">Modello</th>
-                                        <th scope="col">S.N.</th>
-                                        <th scope="col">Add</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">pc fisso</th>
-                                        <td>Lenovo</td>
-                                        <td>A-2134</td>
-                                        <td>S151515151616771717</td>
-                                        <td>
-                                            <button type="button" class="btn btn-sm btn-outline-secondary">
-                                                <i class="fa-solid fa-plus"></i>
-                                        </td>
-                                        </button>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <button type="button" class="btn btn-sm btn-outline-secondary mt-2 hide" id="button-remove-add-goods" onClick="goodAssingenedRemove()">
-                                <i class="fa-solid fa-rotate-right"></i>
-                                Annulla Assegnazione
-                            </button>
-
-                            <table class="table" id="added-goods-to-employee">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Tipologia</th>
-                                        <th scope="col">Marca</th>
-                                        <th scope="col">Modello</th>
-                                        <th scope="col">S.N.</th>
-                                        <th scope="col">Remove</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">Monitor</th>
-                                        <td>Hitachi</td>
-                                        <td>A-2134</td>
-                                        <td>S151515151616771717</td>
-                                        <td><i class="fa-solid fa-trash"></i></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">pc fisso</th>
-                                        <td>Dell</td>
-                                        <td>M-4321</td>
-                                        <td>G166373838383929292</td>
-                                        <td><i class="fa-solid fa-trash"></i></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
+                        <div id="display-add-ass">
+                            <div class="row">
+                                <p class="h6">Assegna Bene</p>
+                                <div class="col">
+                                    <label for="user-story" class="col-form-label">Nuovo assegnatario:</label>
+                                    <select class="form-select" id="user-story">
+                                        <option value="0" selected>Nessuno</option>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <label for="input-assgiorno" class="col-form-label">dal giorno :</label>
+                                    <input type="text" class="form-control format-data" id="input-assgiorno" pattern="^\\s*($1)\\W*($2)?\\W*($3)?([0-9]*).*" maxlength="10" placeholder="dal giorno">
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col">
+                                    <button type="button" class="btn btn-outline-secondary" id="button-add-ass" onclick="insAssegnatario()">Assegna</button>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Chiudi</button>
+                <button type="button" class="btn btn-secondary" id="butt-assign" data-bs-dismiss="modal" onClick="closeModal()">Chiudi</button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade" id="viewListEl" tabindex="-1" aria-labelledby="viewListElLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
+<div class="modal fade" id="viewGood" tabindex="-1" aria-labelledby="viewGoodLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="viewListElLabel">
-                    <i class="fa-solid fa-computer"></i>
-                    <span id="titolo-bene"></span>
-                </h1>
+                <h1 class="modal-title fs-5" id="viewGoodLabel">Visualizza dati bene</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <div class="modal-body">
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-md-3">
+
+                        <div class="col">
+                            <p>Stato: <b><span class="view-good" id="view-stato"></span></b></p>
+                            <p>Categoria: <b><span class="view-good" id="view-category"></span></b></p>
+                            <p>Tipologia: <b><span class="view-good" id="view-tipologia"></span></b></p>
+                            <p>Serial Number: <b><span class="view-good" id="view-seriale"></span></b></p>
+                            <p>Marca: <b><span class="view-good" id="view-marca"></span></b></p>
+                            <p>Modello: <b><span class="view-good" id="view-modello"></span></b></p>
 
                         </div>
-                        <div class="col-md-9 ms-auto " id="monitor-good">
+                        <div class="col">
+                            <p>Data d'acquisto: <b><span class="view-good" id="view-datainserimento"></span></b></p>
+                            <p>Assegnato a: <b><span class="view-good" id="view-assegnatoa"></span></b></p>
+                            <p>Data Assegnazione: <b><span class="view-good" id="view-dataassegnazione"></span></b></p>
+                            <p>Valore d'acquisto: <b><span class="view-good" id="view-valoreacquisto"></span> </b></p>
+                        </div>
+                    </div>
+                    <div class="row">
 
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Assegnato dal</th>
-                                        <th scope="col">restituito</th>
-                                        <th scope="col">Nome</th>
-                                        <th scope="col">Cognome</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th>10/01/2023</th>
-                                        <td>20/10/2023</td>
-                                        <td>Mario</td>
-                                        <td>Rossi</td>
-                                    </tr>
-                                    <tr>
-                                        <th>21/10/2023</th>
-                                        <td>-</td>
-                                        <td>Franco</td>
-                                        <td>Bianchi</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="col">
+                            <p>Note: <br>
+                                <span class="view-good" id="view-note"></span>
+                            </p>
                         </div>
                     </div>
                 </div>

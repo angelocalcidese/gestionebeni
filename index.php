@@ -9,10 +9,15 @@
     <div class="row">
       <?php include("../portale/menu.php"); ?>
 
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-page">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Gestione</h1>
+          <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group me-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportXLS('beniaziendali', 'tabella-export')"><i class="fa-solid fa-download"></i> Export .xls</button>
+            </div>
 
+          </div>
         </div>
 
         <!--<canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>-->
@@ -23,19 +28,56 @@
                 <i class="fa-solid fa-file-circle-plus"></i>
                 Nuovo Bene
               </button>
-              <button type="button" class="btn btn-sm btn-outline-secondary" onClick="gestUserEl()">
+              <!--<button type="button" class="btn btn-sm btn-outline-secondary" onClick="gestUserEl()">
                 <i class="fa-solid fa-user-plus"></i>
                 Gestisci Beni assegnati al Dipendente
-              </button>
+              </button>-->
             </div>
           </div>
         </div>
         <?php include("modal.php"); ?>
         <h2>Beni aziendali</h2>
-        <div class="table-responsive small">
-          <table class="table table-striped display" id="tabella">
+        <div class="container mt-5 mb-5">
+          <div class="row">
+            <div class="col">
+              <h5>Filtri Semplici: </h5>
+            </div>
+            <div class="col">
+              <select class="form-select form-select-sm input-data-filter" id="input-stato-filter">
+                <option value="" selected>Stato</option>
+                <option value="Attivo">Attivo</option>
+                <option value="Guasto">Guasto</option>
+                <option value="Dismesso/venduto">Dismesso/venduto</option>
+              </select>
+            </div>
+            <div class="col">
+              <select class="form-select form-select-sm input-data-filter" id="input-assegnatoa-filter">
+                <option value="" selected>Assegnato a</option>
+              </select>
+            </div>
+            <div class="col">
+              <select class="form-select form-select-sm input-data-filter" id="input-categoria-filter" onchange="activeOtherCatFilter()">
+                <option value="" selected>Categoria</option>
+              </select>
+            </div>
+            <div class=" col">
+              <select class="form-select form-select-sm input-data-filter" id="input-tipologia-filter" disabled="disabled">
+                <option value="" selected>Tipologia</option>
+              </select>
+            </div>
+            <div class="col">
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="activeFilter()">Filtra <i class="fa-solid fa-filter"></i></button>
+            </div>
+            <div class="col">
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearFilter()">Cancella Filtri <i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive hide">
+          <table class="table table-striped " id="tabella-export">
             <thead>
               <tr>
+                <th scope="col">Stato</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Tipologia</th>
                 <th scope="col">Marca</th>
@@ -43,10 +85,30 @@
                 <th scope="col">S/N</th>
                 <th scope="col">Data acquisto</th>
                 <th scope="col">Assegnato a</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
+                <th scope="col">Data Assegnazione</th>
+                <th scope="col">Valore d'acquisto</th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-striped display" id="tabella">
+            <thead>
+              <tr>
+                <th scope="col">Stato</th>
+                <th scope="col">Categoria</th>
+                <th scope="col">Tipologia</th>
+                <th scope="col">Marca</th>
+                <th scope="col">Modello</th>
+                <th scope="col">S/N</th>
+                <th scope="col">Data acquisto</th>
+                <th scope="col">Assegnato a</th>
+                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Assegna Bene e Vissualizza Storia"> Ass. Story</th>
+                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifica Bene">Modifica</th>
+                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizza Dettaglio Bene">Visualizza</th>
               </tr>
             </thead>
             <tbody>
