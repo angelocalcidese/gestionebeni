@@ -8,8 +8,10 @@ var d = new Date();
 var day = d.getDate();
 var idModkm = null;
 var userAss = null;
+var beniSel = [];
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
+
 if (day < 10) {
     day = "0" + day;
 }
@@ -20,9 +22,7 @@ if (mounth < 10) {
 }
 var strDate = day + "/" + mounth + "/" + d.getFullYear();
 
-function tablePagination() {
-    var table = new DataTable('table.display');
-}
+
 function activeFilter() {
     var link = "/gestionebeni/";
 
@@ -145,6 +145,8 @@ function controlForm() {
     var dataassegnazione = $("#input-dataassegnazione").val();
     var stato = $("#input-stato").val();
     var valoreacquisto = $("#input-valoreacquisto").val();
+    var dataproduzione = $("#input-dataproduzione").val();
+    var cespite = $("#input-cespite").val();
     var note = $("#input-note").val();
 
     var count = 0;
@@ -190,6 +192,8 @@ function controlForm() {
             data.stato = stato;
             data.valoreacquisto = valoreacquisto;
             data.note = note;
+            data.dataproduzione = dataproduzione;
+            data.cespite = cespite;
             if (catnew != "") {
                 dataMod = data;
                 createCat();
@@ -219,12 +223,12 @@ function modRow(data) {
     $.ajax({
         method: "POST",
         url: "api/modGood.php",
-        data: JSON.stringify({ id: data.id, marca: data.marca, modello: data.modello, tipologia: data.tipologia, category: data.category, sn: data.sn, datainserimento: data.dataacquisto, assegnatoa: data.assegnatoa, dataassegnazione: data.dataassegnazione, stato: data.stato, valoreacquisto: data.valoreacquisto, note: data.note }),
+        data: JSON.stringify({ id: data.id, marca: data.marca, modello: data.modello, tipologia: data.tipologia, category: data.category, sn: data.sn, datainserimento: data.dataacquisto, assegnatoa: data.assegnatoa, dataassegnazione: data.dataassegnazione, stato: data.stato, valoreacquisto: data.valoreacquisto, note: data.note, cespite: data.cespite, dataproduzione: data.dataproduzione }),
         contentType: "application/json",
         success: function (data) {
             console.log("funzione chiamata quando la chiamata ha successo (response 200)", data);
             $("#alert-success").removeClass("hide");
-            $("#alert-success").text("Veicolo modificato correttamente");
+            $("#alert-success").text("Bene modificato correttamente");
             $("#form-add").addClass("hide");
             $("#add-button").addClass("hide");
             //cleanInput();
@@ -238,7 +242,8 @@ function modRow(data) {
 }
 
 function createCat() {
-   var catnew = $("#input-altro-cat").val();
+    var catnew = $("#input-altro-cat").val();
+    
 
     $.ajax({
         method: "POST",
@@ -314,6 +319,9 @@ function addRow(catid, typeid) {
     var dataassegnazione = $("#input-dataassegnazione").val();
     var stato = $("#input-stato").val();
     var valoreacquisto = $("#input-valoreacquisto").val();
+    var note = $("#input-note").val();
+    var dataproduzione = $("#input-dataproduzione").val();
+    var cespite = $("#input-cespite").val();
 
     if (catid != null) { cat = catid; }
     if (typeid != null) { type = typeid; }
@@ -321,12 +329,12 @@ function addRow(catid, typeid) {
     $.ajax({
         method: "POST",
         url: "api/createGood.php",
-        data: JSON.stringify({ marca: marca, modello: modello, tipologia: type, category: cat, sn: sn, datainserimento: dataacquisto, assegnatoa: assegnatoa, dataassegnazione: dataassegnazione, stato: stato, valoreacquisto: valoreacquisto, note: note }),
+        data: JSON.stringify({ marca: marca, modello: modello, tipologia: type, category: cat, sn: sn, datainserimento: dataacquisto, assegnatoa: assegnatoa, dataassegnazione: dataassegnazione, stato: stato, valoreacquisto: valoreacquisto, note: note, cespite: cespite, dataproduzione: dataproduzione }),
         contentType: "application/json",
         success: function (data) {
             console.log("funzione chiamata quando la chiamata ha successo (response 200)", data);
             $("#alert-success").removeClass("hide");
-            $("#alert-success").text("Veicolo inserito correttamente");
+            $("#alert-success").text("Bene inserito correttamente");
             $("#form-add").addClass("hide");
             $("#add-button").addClass("hide");
             cleanInput();
@@ -362,8 +370,44 @@ function viewGood(id) {
     $("#view-dataassegnazione").text(good.dataassegnazione);
     $("#view-assegnatoa").html(searchUser(good.assegnatoa));
     $("#view-note").html(good.note);
+    $("#view-cespite").html(good.cespite);
+    $("#view-dataproduzione").html(good.dataproduzione);
 
     $('#viewGood').modal('show');
+}
+
+function controlSelGood(id) {
+    var res = null;
+    for (var b = 0; b < beniSel.length; b++) {
+        if (id == beniSel[b].id) {
+            res = b;
+        }    
+    } 
+    return res;
+}
+
+function addListAss(id) {
+    $("#rapid-btn-" + id).addClass("select-btn");
+    
+    for (var a = 0; a < beni.length; a++){
+        if (id == beni[a].id) {
+            search = controlSelGood(id);
+           // console.log("SEARCH", search);
+            if (search != null) {
+                $("#rapid-btn-" + id).removeClass("select-btn");
+                beniSel.splice(search, 1);
+            } else {
+               // console.log("aggiungo");
+                beniSel.push(beni[a]);
+            }
+        }
+    }
+    if (beniSel.length > 0) {
+        $("#btn-assegna-massa").prop("disabled", false);
+    } else {
+        $("#btn-assegna-massa").prop("disabled", true);
+    }
+    console.log("BENI: ", beniSel);
 }
 
 function goods() { 
@@ -386,17 +430,21 @@ function goods() {
                  
             for (i = 0; i < righe.length; i++) {
                 var riga = righe[i];
-                var element = "<td>" + riga.stato + "</td>";
+                //var element = '<td style="text-align:left;"><button type="button" class="btn btn-sm btn-outline-secondary" id="rapid-btn-' + riga.id + '" onClick="addAssignedView(' + riga.id + ')" ><i class="fa-solid fa-user-plus"></i></td>';
+                var element = '<td style="text-align:left;"><button type="button" class="btn btn-sm btn-outline-secondary" title="' + riga.id + '" id="rapid-btn-' + riga.id + '" onClick="addListAss(' + riga.id + ')" ><i class="fa-solid fa-plus"></i></td>';
+                element += '<td id="rapid-ass-' + riga.id + '">' + searchUser(riga.assegnatoa) + '</td>';
+                element += "<td>" + riga.stato + "</td>";
                 element += "<td>" + searchCat(riga.category) + "</td>";
                 element += "<td>" + searchType(riga.tipologia) + "</td>";
                 element += "<td>" + riga.marca + "</td>";
                 element += "<td>" + riga.modello + "</td>";
                 element += "<td>" + riga.seriale + "</td>";
-                element += "<td>" + riga.datainserimento + "</td>";
-                element += "<td>" + searchUser(riga.assegnatoa) + "</td>";
+                //element += "<td>" + riga.datainserimento + "</td>";
+                //element += '<td class="text-center">' + trueOrFalse(riga.accettato) + '</td>';
                 element += '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-secondary" onClick="storyAssigned(' + riga.id + ')" ><i class="fa-solid fa-user"></i></td>';
                 element += '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="openModRow(' + riga.id + ')"><i class="fa-solid fa-square-pen"></i></button></td>';
                 element += '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="viewGood(' + i + ')"><i class="fa-solid fa-eye"></i></button></td>';
+                element += '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="delGood(' + riga.id + ')"><i class="fa-solid fa-trash"></i></button></td>';
                 $("<tr/>").append(element).appendTo("#tabella");
 
                 var element2 = "<td>" + riga.stato + "</td>";
@@ -413,7 +461,7 @@ function goods() {
             }  
             }
             
-            tablePagination();
+            tablePaginationNew();
             $("#input-stato-filter").val(statofilter);
             $("#input-assegnatoa-filter").val(assegnatofilter);
             $("#input-categoria-filter").val(catfilter);
@@ -426,6 +474,36 @@ function goods() {
     });
 }
 
+function gestCatType() {
+    $('#viewCatType').modal('show');
+}
+
+function yesDelete() {
+    $.ajax({
+        method: "POST",
+        url: "api/deleteGood.php",
+        data: JSON.stringify({ id: idRow }),
+        dataType: 'json',
+        success: function (data) {
+            $("#alert-success-choice").removeClass("hide");
+            $("#btn-yes-del").addClass("hide");
+        },
+        error: function (error) {
+            console.log("funzione chiamata quando la chiamata fallisce", error);
+            $("#alert-error-choice").removeClass("hide");
+            $("#alert-error-choice").text(error);
+        }
+    });
+}
+
+function delGood(id) {
+    idRow = id;
+    var data = searchData(id);
+    console.log("DATA: ", data);
+    $("#choice-title").text("Sei Sicuro di voler Eliminare questo bene?");
+    $("#choice-text").html("<br><b>" + data.marca + " " + data.modello + "</b> Assegnato a: <b>" + searchUser(data.assegnatoa) + "</b><br><br>(Cancellando questo vene verrà eliminata la storia degli assegnatari per questo bene)");
+    $('#modalChoice').modal('show');
+}
 
 function storyAssigned(id) {
     var data = searchData(id);
@@ -443,7 +521,7 @@ function storyAssigned(id) {
     }
 
     $("#bodyGuida").empty();
-    $("#input-kmattuali").val(data.km);
+    //$("#input-kmattuali").val(data.km);
     $.ajax({
         method: "POST",
         url: "api/readStory.php",
@@ -474,14 +552,28 @@ function storyAssigned(id) {
             $("#alert-error").text(error);
         }
     });
-
-
 }
 
-function insAssegnatario() {
+function addAssignedView() {
+    $("#bodyGoodAss").empty();
+    for (var a = 0; a < beniSel.length; a++){
+        var element = '<td>' + beniSel[a].marca + '</td><td>' + beniSel[a].modello + '</td><td>' + beniSel[a].seriale + '</td>';
+        $("<tr/>").append(element).appendTo("#bodyGoodAss");
+    }
+
+    $("#input-assday").val(strDate);
+    $("#user-assigned").val("0");
+    $('#viewAss').modal('show');
+}
+
+function insAssStory() {
     var dipendente = $("#user-story").val();
     var day = $("#input-assgiorno").val();
+    insAssegnatario(dipendente, day);
+}
 
+function insAssegnatario(dipendente, day, close) {
+    
     $.ajax({
         method: "POST",
         url: "api/insertStory.php",
@@ -493,6 +585,7 @@ function insAssegnatario() {
             $("#alert-success-guida").text("Bene Assegnato correttamente");
             $("#view-assign").addClass("hide");
             $("#butt-assign").text("OK");
+            if (close) closeModal();
         },
         error: function (error) {
             console.log("funzione chiamata quando la chiamata fallisce", error);
@@ -503,6 +596,40 @@ function insAssegnatario() {
 
 }
 
+var contaBeniSel = 0;
+function insAssRapid() {
+
+    if (contaBeniSel < beniSel.length) {
+        var dipendente = $("#user-assigned").val();
+        var day = $("#input-assday").val();
+        $.ajax({
+            method: "POST",
+            url: "api/insertStoryMassiv.php",
+            data: JSON.stringify({ bene: beniSel[contaBeniSel].id, da: day, dipendente: dipendente }),
+            contentType: "application/json",
+            success: function (data) {
+                console.log("funzione chiamata quando la chiamata ha successo (response 200)", data);
+                contaBeniSel++;
+                insAssRapid();
+                // if (close) closeModal();
+            },
+            error: function (error) {
+                console.log("funzione chiamata quando la chiamata fallisce", error);
+                $("#alert-error").removeClass("hide");
+                $("#alert-error").text(error);
+            }
+        });
+    } else {
+        console.log("OK BENI GESTITI");
+        $("#alert-success-massive").removeClass("hide");
+        $("#alert-success-massive").text("Beni Assegnati correttamente");
+        $("#view-assign-mass").addClass("hide");
+        $("#tasto-assegna-tutti").addClass("hide");
+        $("#butt-assign-mass").text("OK");
+    }
+
+
+}
 function searchData(id) {
     var data = "";
     for (var a = 0; a < beni.length; a++) {
@@ -532,6 +659,8 @@ function openModRow(id) {
     $("#input-stato").val(data.stato);
     $("#input-valoreacquisto").val(data.valoreacquisto);
     $("#input-note").val(data.note);
+    $("#input-cespite").val(data.cespite);
+    $("#input-dataproduzione").val(data.dataproduzione);
     $('#addGood').modal('show');
 }
 
@@ -552,10 +681,22 @@ function usersCall() {
                 $("#input-assegnatoa").append(element);
                 $("#input-assegnatoa-filter").append(element);
                 $("#user-story").append(element);
+                $("#user-assigned").append(element);
             }
             
         }
     });
+}
+
+function filterType() {
+    var id = $("#cat-select-filter").val();
+    $(".cat-el").addClass("hide");
+
+    if (id == "") {
+        $(".cat-el").removeClass("hide");
+    } else {
+        $(".cat-" + id).removeClass("hide");
+    }
 }
 
 function typeCall() {
@@ -563,27 +704,52 @@ function typeCall() {
         url: 'api/getType.php',
         dataType: 'json', //restituisce un oggetto JSON
         complete: function (type) {
-            console.log("RISPOSTA", type.responseJSON);
+            console.log("Type Rest", type.responseJSON);
             typology = type.responseJSON;
+            if (type.responseJSON) {
+                $("#list-type-mod").empty();
+                for (i = 0; i < typology.length; i++) {
+                    var riga = typology[i];
+
+                    
+                    var typeMod = '<li class="list-group-item cat-el cat-' + riga.category + '" ><div class="row"><div class="col-10"><input class="form-control form-control-sm" type="text" id="type-voice-' + riga.id + '" value="' + riga.voce + '"></div>';
+                    typeMod += '<div class="col-2"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="modTypeVoice(' + riga.id + ')"><i class="fa-solid fa-square-pen"></i></button></div></div></li>';
+
+                    $("#list-type-mod").append(typeMod);
+                    
+                }
+            }
+            filterType();
             goods();
         }
     });
 }
 
-function categoryCall() {
+function categoryCall(refresh) {
     $.ajax({
         url: 'api/getCategory.php',
         dataType: 'json', //restituisce un oggetto JSON
         complete: function (cat) {
-            console.log("RISPOSTA", cat.responseJSON);
+            console.log("Category Resp.", cat.responseJSON);
             if (cat.responseJSON) {
-                 category = cat.responseJSON;
+                category = cat.responseJSON;
+                $("#list-cat-mod").empty();
+                //$("#cat-select-type").empty();
+                $(".opt-cat").remove();
                 for (i = 0; i < category.length; i++) {
                     var riga = category[i];
-                    var element = "<option value='" + riga.id + "'>" + riga.voce + "</option>";
+                    var element = "<option value='" + riga.id + "' class='opt-cat'>" + riga.voce + "</option>";
 
-                    $("#input-categoria").append(element);
-                    $("#input-categoria-filter").append(element);
+                    //if (!refresh) {
+                        $("#input-categoria").append(element);
+                        $("#input-categoria-filter").append(element);
+                        $("#cat-select-filter").append(element);
+                    //}
+                    
+                    $("#cat-select-type").append(element);
+                    var catMod = '<li class="list-group-item"><div class="row"><div class="col-10"><input class="form-control form-control-sm" type="text" id="cat-voice-' + riga.id + '" value="' + riga.voce + '"></div>';
+                    catMod += '<div class="col-2"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="modCatVoice(' + riga.id + ')"><i class="fa-solid fa-square-pen"></i></button></div></div></li>';
+                    $("#list-cat-mod").append(catMod);
                 }
             }
             
@@ -592,6 +758,101 @@ function categoryCall() {
     });
 }
 
+
+function createCatNew() {
+    var catnew = $("#cat-voice-new").val();
+
+    $.ajax({
+        method: "POST",
+        url: "api/createCategory.php",
+        data: JSON.stringify({ catnew: catnew }),
+        contentType: "application/json",
+        success: function (data) {
+            console.log("funzione CATEGORY chiamata quando la chiamata ha successo (response 200)", data);
+            $("#alert-success-cat-new").removeClass("hide");
+            setTimeout(closeAlarm, 1000);
+            categoryCall(true);
+            $("#cat-voice-new").val("");
+        },
+        error: function (error) {
+            console.log("funzione chiamata quando la chiamata fallisce", error);
+            $("#alert-error").removeClass("hide");
+            $("#alert-error").text(error);
+        }
+    });
+}
+
+function createTypeNew() {
+    var catid = $("#cat-select-type").val();
+
+    console.log("CATID", catid);
+    if (catid != "") {
+        var typenew = $("#type-voice-new").val();
+        $.ajax({
+            method: "POST",
+            url: "api/createType.php",
+            data: JSON.stringify({ idcat: catid, typenew: typenew }),
+            contentType: "application/json",
+            success: function (data) {
+                console.log("funzione TYPE chiamata quando la chiamata ha successo (response 200)", data);
+                $("#alert-success-type-new").removeClass("hide");
+                setTimeout(closeAlarm, 1000);
+                $("#cat-select-type").val("");
+                $("#type-voice-new").val("");
+                typeCall();
+            },
+            error: function (error) {
+                console.log("funzione chiamata quando la chiamata fallisce", error);
+                $("#alert-error").removeClass("hide");
+                $("#alert-error").text(error);
+            }
+        });
+    } else {
+        $("#alert-error-type-new").removeClass("hide");
+        setTimeout(closeAlarm, 2000);
+    }
+   
+}
+
+
+function modCatVoice(id) {
+    var voice = $("#cat-voice-" + id).val();
+    $.ajax({
+        method: "POST",
+        url: "api/renameCat.php",
+        data: JSON.stringify({ id: id, voice: voice }),
+        dataType: 'json',
+        success: function (data) {
+            $("#alert-success-cat").removeClass("hide");
+            setTimeout(closeAlarm, 1000);
+            categoryCall(true);
+        },
+        error: function (error) {
+            console.log("funzione chiamata quando la chiamata fallisce", error);
+            $("#alert-error").removeClass("hide");
+            $("#alert-error").text(error);
+        }
+    });
+}
+
+function modTypeVoice(id) {
+    var voice = $("#type-voice-" + id).val();
+    $.ajax({
+        method: "POST",
+        url: "api/renameType.php",
+        data: JSON.stringify({ id: id, voice: voice }),
+        dataType: 'json',
+        success: function (data) {
+            $("#alert-success-type").removeClass("hide");
+            setTimeout(closeAlarm, 1000);
+        },
+        error: function (error) {
+            console.log("funzione chiamata quando la chiamata fallisce", error);
+            $("#alert-error").removeClass("hide");
+            $("#alert-error").text(error);
+        }
+    });
+}
 function gestUserEl(id) {
     $('#user-gest').val("");
     $("#monitor-good").addClass("hide");
@@ -624,7 +885,6 @@ function gestListEl(id) {
             $('#viewListEl').modal('show');
         }
     }
-    
 }
 
 function goodAssingenedStep1() { 
@@ -647,6 +907,118 @@ function goodAssingenedRemove() {
     $("#button-remove-add-goods").addClass("hide");
 }
 
+/** CARICA CSV */
+var countControl = 0;
+var countAdd = 0;
+var errorCsv = true;
+var elencoEl = [];
+
+function addFileElement() {
+    $("#error-csv").empty();
+    $("#alert-error-csv").addClass("hide");
+    errorCSVText = "";
+    if (countAdd < elencoEl.length) {
+        
+        console.log("ELEMENTO ", elencoEl[countAdd]);
+        $.ajax({
+              method: "POST",
+              url: "api/createGood.php",
+              data: JSON.stringify({ marca: elencoEl[countAdd].marca, modello: elencoEl[countAdd].modello, tipologia: elencoEl[countAdd].tipologia, category: elencoEl[countAdd].categoria, sn: elencoEl[countAdd].sn, datainserimento: elencoEl[countAdd].datacquisto, assegnatoa: elencoEl[countAdd].assegnatoa, dataassegnazione: elencoEl[countAdd].dataassegnazione, stato: elencoEl[countAdd].stato, valoreacquisto: elencoEl[countAdd].valoreacquisto, note: "" }),
+              contentType: "application/json",
+              success: function (data) {
+                  console.log("funzione chiamata quando la chiamata ha successo (response 200)", data);
+             
+            countAdd++;
+            addFileElement();
+         },
+          error: function (error) {
+              console.log("funzione chiamata quando la chiamata fallisce", error);
+              $("#alert-error-csv").removeClass("hide");
+              $("#alert-error-csv").text(error);
+          }
+      });
+        
+    } else {
+        $("#spinner-modal").addClass("hide");
+        $("#alert-success-csv").removeClass("hide");
+    }
+}
+
+function controlXLS() {
+    
+    if ((countControl < importXLS.length) && errorCsv) {
+        importXLS[countControl].categoria = searchElement(category, "voce", importXLS[countControl].categoria);
+        importXLS[countControl].tipologia = searchElement(typology, "voce", importXLS[countControl].tipologia);
+        var assegnatoOrigin = importXLS[countControl].assegnatoa;
+
+        console.log("assegnatoOrigin", importXLS[countControl].assegnatoa);
+        importXLS[countControl].assegnatoa = searchUserName(importXLS[countControl].assegnatoa);
+        
+        var riga = countControl + 1;
+        if ((importXLS[countControl].categoria == "") || (importXLS[countControl].stato == "") || (importXLS[countControl].tipologia == "")) {
+            errorCsv = false;
+            console.log("errore (categoria, stato, tipologia) alla riga " + countControl, importXLS[countControl]);
+            errorCSVText += '<li class="list-group-item">categoria, stato, tipologia: alla riga ' + riga + ' errati o non esistenti</li>';
+        }
+        if ((assegnatoOrigin != "Non Assegnato")) {
+            if ((assegnatoOrigin != "") && (importXLS[countControl].assegnatoa == "") ) {
+                errorCsv = false;
+                console.log("Assegnato a: alla riga " + countControl, importXLS[countControl]);
+                errorCSVText += '<li class="list-group-item">Assegnato a: alla riga  ' + riga + ' errato o non esistente</li>';
+            }
+        }
+        
+
+        elencoEl.push(importXLS[countControl])
+        countControl++;
+       
+        controlXLS();
+        
+    } else if (countControl == importXLS.length) { 
+        console.log("CONTROLLO SUPERATO");
+        //console.log(elencoEl);
+        addFileElement();
+    } else {
+        $("#error-csv").html(errorCSVText);
+        $("#spinner-modal").addClass("hide");
+        $("#alert-error-csv").removeClass("hide");
+
+    }
+    
+}
+
+document.querySelector('#import-csv').addEventListener('change', function () {
+    var reader = new FileReader();
+    reader.onload = function () {
+        var arrayBuffer = this.result,
+            array = new Uint8Array(arrayBuffer),
+            binaryString = String.fromCharCode.apply(null, array);
+
+        /* Call XLSX */
+        var workbook = XLSX.read(binaryString, {
+            type: "binary"
+        });
+
+        /* DO SOMETHING WITH workbook HERE */
+        var first_sheet_name = workbook.SheetNames[0];
+        /* Get worksheet */
+        var worksheet = workbook.Sheets[first_sheet_name];
+        console.log(XLSX.utils.sheet_to_json(worksheet, {
+            raw: true
+        }));
+        importXLS = XLSX.utils.sheet_to_json(worksheet, {
+            raw: true
+        });
+        if (importXLS.length > 0) {
+            $("#send-csv-file").prop("disabled", false);
+        } else {
+            $("#alert-error-csv").removeClass("hide");
+        }
+
+    }
+    reader.readAsArrayBuffer(this.files[0]);
+});
+
 $(document).ready(function () {
     usersCall();
     categoryCall();
@@ -657,8 +1029,17 @@ $(document).ready(function () {
     new DateTime(document.getElementById('input-dataassegnazione'), {
         format: 'DD/MM/YYYY'
     });
+    new DateTime(document.getElementById('input-dataproduzione'), {
+        format: 'DD/MM/YYYY'
+    });
     new DateTime(document.getElementById('input-assgiorno'), {
         format: 'DD/MM/YYYY'
+    });
+    new DateTime(document.getElementById('input-assday'), {
+        format: 'DD/MM/YYYY'
+    });
+    $("#input-dataacquisto").change(function () {
+        $("#input-dataproduzione").val($(this).val());
     });
 });
     

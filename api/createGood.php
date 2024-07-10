@@ -7,10 +7,10 @@ require_once "../../portale/api/getUserCoockie.php";
 
     $data = getRequestDataBody();
 
-    $sql = "INSERT INTO `beni` (`id`, `category`, `tipologia`, `marca`, `modello`, `seriale`, `assegnatoa`, `datainserimento`, `dataassegnazione`, `valoreacquisto`, `stato`, `note`, `company`) 
+    $sql = "INSERT INTO `beni` (`id`, `category`, `tipologia`, `marca`, `modello`, `seriale`, `assegnatoa`, `datainserimento`, `dataassegnazione`, `valoreacquisto`, `stato`, `note`, `company`, `cespite`, `dataproduzione`) 
     VALUES (NULL, '" . $data["category"] . "', '" . $data["tipologia"] . "', '" . $data["marca"] . "', '" . $data["modello"] . "', '" . $data["sn"] . "', 
     '" . $data["assegnatoa"] . "', '" . $data["datainserimento"] . "', '" . $data["dataassegnazione"] . "', '" . $data["valoreacquisto"] . "', '" . $data["stato"] . "', '" . $data["note"] . "', 
-    '". $user_params->company."')";
+    '". $user_params->company. "', '" . $data["cespite"] . "', '" . $data["dataproduzione"] . "')";
 
     $result = $conn->query($sql);
 

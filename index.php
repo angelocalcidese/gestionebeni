@@ -15,6 +15,7 @@
           <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group me-2">
               <button type="button" class="btn btn-sm btn-outline-secondary" onclick="exportXLS('beniaziendali', 'tabella-export')"><i class="fa-solid fa-download"></i> Export .xls</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" style="margin-left:5px;" id="button-exp-veicoli" onclick="importCSV()"><i class="fa-solid fa-upload"></i>Import Beni</button>
             </div>
 
           </div>
@@ -28,6 +29,27 @@
                 <i class="fa-solid fa-file-circle-plus"></i>
                 Nuovo Bene
               </button>
+              <!--<button type="button" class="btn btn-sm btn-outline-secondary" onClick="acceptGoods()">
+                <i class="fa-solid fa-handshake"></i>
+                Richiedi Accettazione Beni
+              </button>-->
+              <button type="button" class="btn btn-sm btn-outline-secondary" onClick="gestCatType()">
+                <i class="fa-solid fa-square-pen"></i>
+                Gest. Categorie e Tipologie
+              </button>
+              <!-- <button type="button" class="btn btn-sm btn-outline-secondary" onClick="assegnaBeni()">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Mod. Voci Categorie
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" onClick="assegnaBeni()">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Mod. Voci Tipologie
+              </button>-->
+              <button type="button" id="btn-assegna-massa" class="btn btn-sm btn-outline-secondary" onClick="addAssignedView()" disabled>
+                <i class="fa-solid fa-plus-minus"></i>
+                Riassegna Beni Selezionati
+              </button>
+
               <!--<button type="button" class="btn btn-sm btn-outline-secondary" onClick="gestUserEl()">
                 <i class="fa-solid fa-user-plus"></i>
                 Gestisci Beni assegnati al Dipendente
@@ -82,7 +104,7 @@
                 <th scope="col">Tipologia</th>
                 <th scope="col">Marca</th>
                 <th scope="col">Modello</th>
-                <th scope="col">S/N</th>
+                <th scope="col">S.N./Targa/IMEI</th>
                 <th scope="col">Data acquisto</th>
                 <th scope="col">Assegnato a</th>
                 <th scope="col">Data Assegnazione</th>
@@ -95,20 +117,21 @@
         </div>
 
         <div class="table-responsive">
-          <table class="table table-striped display" id="tabella">
+          <table class="table table-striped display" id="tabella" style="width:100%">
             <thead>
               <tr>
+                <th scope="col">Sel.</th>
+                <th scope="col">Assegnato</th>
                 <th scope="col">Stato</th>
                 <th scope="col">Categoria</th>
                 <th scope="col">Tipologia</th>
                 <th scope="col">Marca</th>
                 <th scope="col">Modello</th>
-                <th scope="col">S/N</th>
-                <th scope="col">Data acquisto</th>
-                <th scope="col">Assegnato a</th>
-                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Assegna Bene e Vissualizza Storia"> Ass. Story</th>
-                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifica Bene">Modifica</th>
-                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizza Dettaglio Bene">Visualizza</th>
+                <th scope="col">S.N./Targa/IMEI</th>
+                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Assegna Bene e Vissualizza Storia">Story</th>
+                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifica Bene">Mod.</th>
+                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Visualizza Dettaglio Bene">Dett.</th>
+                <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Cancella Bene">Canc.</th>
               </tr>
             </thead>
             <tbody>

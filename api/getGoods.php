@@ -40,6 +40,9 @@ if ($result->num_rows > 0) {
         $object->dataassegnazione = $row["dataassegnazione"];
         $object->valoreacquisto = $row["valoreacquisto"];
         $object->note = $row["note"];
+        $object->accettato = $row["accettato"];
+        $object->cespite = $row["cespite"];
+        $object->dataproduzione = $row["dataproduzione"]; 
         array_push($data, $object);
     }
   } 
