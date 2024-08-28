@@ -288,7 +288,7 @@ function createType(catid) {
     });
 }
 
-function searchCat(id) {
+function searchCatVoice(id) {
     var resp = "";
     for (var a = 0; a < category.length; a++){
         if (id == category[a].id) {
@@ -361,7 +361,7 @@ function viewGood(id) {
     var good = beni[id];
     $("#view-stato").text(good.stato);
     $("#view-tipologia").text(searchType(good.tipologia));
-    $("#view-category").text(searchCat(good.category));
+    $("#view-category").text(searchCatVoice(good.category));
     $("#view-marca").text(good.marca);
     $("#view-modello").text(good.modello);
     $("#view-seriale").text(good.seriale);
@@ -407,7 +407,8 @@ function addListAss(id) {
     } else {
         $("#btn-assegna-massa").prop("disabled", true);
     }
-    console.log("BENI: ", beniSel);
+    $("#assegna-counter").text(beniSel.length);
+    //console.log("BENI: ", beniSel);
 }
 
 function goods() { 
@@ -434,7 +435,7 @@ function goods() {
                 var element = '<td style="text-align:left;"><button type="button" class="btn btn-sm btn-outline-secondary" title="' + riga.id + '" id="rapid-btn-' + riga.id + '" onClick="addListAss(' + riga.id + ')" ><i class="fa-solid fa-plus"></i></td>';
                 element += '<td id="rapid-ass-' + riga.id + '">' + searchUser(riga.assegnatoa) + '</td>';
                 element += "<td>" + riga.stato + "</td>";
-                element += "<td>" + searchCat(riga.category) + "</td>";
+                element += "<td>" + searchCatVoice(riga.category) + "</td>";
                 element += "<td>" + searchType(riga.tipologia) + "</td>";
                 element += "<td>" + riga.marca + "</td>";
                 element += "<td>" + riga.modello + "</td>";
@@ -443,12 +444,13 @@ function goods() {
                 //element += '<td class="text-center">' + trueOrFalse(riga.accettato) + '</td>';
                 element += '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-secondary" onClick="storyAssigned(' + riga.id + ')" ><i class="fa-solid fa-user"></i></td>';
                 element += '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="openModRow(' + riga.id + ')"><i class="fa-solid fa-square-pen"></i></button></td>';
+                element += '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="openDuplicate(' + riga.id + ')"><i class="fa-solid fa-copy"></i></button></td>';
                 element += '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="viewGood(' + i + ')"><i class="fa-solid fa-eye"></i></button></td>';
                 element += '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-secondary" onclick="delGood(' + riga.id + ')"><i class="fa-solid fa-trash"></i></button></td>';
                 $("<tr/>").append(element).appendTo("#tabella");
 
                 var element2 = "<td>" + riga.stato + "</td>";
-                element2 += "<td>" + searchCat(riga.category) + "</td>";
+                element2 += "<td>" + searchCatVoice(riga.category) + "</td>";
                 element2 += "<td>" + searchType(riga.tipologia) + "</td>";
                 element2 += "<td>" + riga.marca + "</td>";
                 element2 += "<td>" + riga.modello + "</td>";
@@ -663,6 +665,27 @@ function openModRow(id) {
     $("#input-dataproduzione").val(data.dataproduzione);
     $('#addGood').modal('show');
 }
+function openDuplicate(id) {
+    var data = searchData(id);
+    $(".input-data").val("");
+    $("#input-categoria").val(data.category);
+    activeOtherCat();
+    $("#input-tipologia").val(data.tipologia);
+    $("#input-marca").val(data.marca);
+    $("#input-modello").val(data.modello);
+    //$("#input-sn").val(data.seriale);
+    $("#input-dataacquisto").val(data.datainserimento);
+    //$("#input-assegnatoa").val(data.assegnatoa);
+    $("#input-assegnatoa").prop("disabled", false);
+    //$("#input-dataassegnazione").val(data.dataassegnazione);
+    $("#input-dataassegnazione").prop("disabled", false);
+    $("#input-stato").val(data.stato);
+    $("#input-valoreacquisto").val(data.valoreacquisto);
+    //$("#input-note").val(data.note);
+    $("#input-cespite").val(data.cespite);
+    $("#input-dataproduzione").val(data.dataproduzione);
+    $('#addGood').modal('show');
+}
 
 function usersCall() {
     
@@ -758,48 +781,37 @@ function categoryCall(refresh) {
     });
 }
 
-
+function searchCat(val) {
+    var resp = false;
+    for (var a = 0; a < category.length; a++){
+        var cat = category[a].voce;
+        if (val.toLowerCase() == cat.toLowerCase()) {
+            resp = true;
+        }
+    }
+    return resp;
+}
 function createCatNew() {
     var catnew = $("#cat-voice-new").val();
 
-    $.ajax({
-        method: "POST",
-        url: "api/createCategory.php",
-        data: JSON.stringify({ catnew: catnew }),
-        contentType: "application/json",
-        success: function (data) {
-            console.log("funzione CATEGORY chiamata quando la chiamata ha successo (response 200)", data);
-            $("#alert-success-cat-new").removeClass("hide");
-            setTimeout(closeAlarm, 1000);
-            categoryCall(true);
-            $("#cat-voice-new").val("");
-        },
-        error: function (error) {
-            console.log("funzione chiamata quando la chiamata fallisce", error);
-            $("#alert-error").removeClass("hide");
-            $("#alert-error").text(error);
-        }
-    });
-}
-
-function createTypeNew() {
-    var catid = $("#cat-select-type").val();
-
-    console.log("CATID", catid);
-    if (catid != "") {
-        var typenew = $("#type-voice-new").val();
+    if (searchCat(catnew)) {
+        //console.log("CATEGORIA ESISTENTE");
+        $("#alert-error-cat-new").text("Categoria già esistente");
+        $("#alert-error-cat-new").removeClass("hide");
+        setTimeout(closeAlarm, 2000);
+    } else {
+        //console.log("CATEGORIA NON ESISTENTE");
         $.ajax({
             method: "POST",
-            url: "api/createType.php",
-            data: JSON.stringify({ idcat: catid, typenew: typenew }),
+            url: "api/createCategory.php",
+            data: JSON.stringify({ catnew: catnew }),
             contentType: "application/json",
             success: function (data) {
-                console.log("funzione TYPE chiamata quando la chiamata ha successo (response 200)", data);
-                $("#alert-success-type-new").removeClass("hide");
+                console.log("funzione CATEGORY chiamata quando la chiamata ha successo (response 200)", data);
+                $("#alert-success-cat-new").removeClass("hide");
                 setTimeout(closeAlarm, 1000);
-                $("#cat-select-type").val("");
-                $("#type-voice-new").val("");
-                typeCall();
+                categoryCall(true);
+                $("#cat-voice-new").val("");
             },
             error: function (error) {
                 console.log("funzione chiamata quando la chiamata fallisce", error);
@@ -807,32 +819,88 @@ function createTypeNew() {
                 $("#alert-error").text(error);
             }
         });
+    }   
+}
+
+function searchTypeExist(cat, val) {
+    var resp = false;
+    for (var a = 0; a < typology.length; a++) {
+        var type = typology[a].voce;
+        if ((val.toLowerCase() == type.toLowerCase()) && (cat == typology[a].category)) {
+            resp = true;
+        }
+    }
+    return resp;
+}
+
+function createTypeNew() {
+    var catid = $("#cat-select-type").val();
+    $("#alert-error-type-new").text("Selezionare Categoria");
+    console.log("CATID", catid);
+
+    if (catid != "") {
+        var typenew = $("#type-voice-new").val();
+
+        if (searchTypeExist(catid, typenew)) {
+            //console.log("CATEGORIA ESISTENTE");
+            $("#alert-error-type-new").text("Tipologia già esistente");
+            $("#alert-error-type-new").removeClass("hide");
+            setTimeout(closeAlarm, 2000);
+        } else {
+            $.ajax({
+                method: "POST",
+                url: "api/createType.php",
+                data: JSON.stringify({ idcat: catid, typenew: typenew }),
+                contentType: "application/json",
+                success: function (data) {
+                    console.log("funzione TYPE chiamata quando la chiamata ha successo (response 200)", data);
+                    $("#alert-success-type-new").removeClass("hide");
+                    setTimeout(closeAlarm, 1000);
+                    $("#cat-select-type").val("");
+                    $("#type-voice-new").val("");
+                    typeCall();
+                },
+                error: function (error) {
+                    console.log("funzione chiamata quando la chiamata fallisce", error);
+                    $("#alert-error").removeClass("hide");
+                    $("#alert-error").text(error);
+                }
+            });
+        }
+
     } else {
         $("#alert-error-type-new").removeClass("hide");
         setTimeout(closeAlarm, 2000);
     }
-   
+
 }
 
 
 function modCatVoice(id) {
     var voice = $("#cat-voice-" + id).val();
-    $.ajax({
-        method: "POST",
-        url: "api/renameCat.php",
-        data: JSON.stringify({ id: id, voice: voice }),
-        dataType: 'json',
-        success: function (data) {
-            $("#alert-success-cat").removeClass("hide");
-            setTimeout(closeAlarm, 1000);
-            categoryCall(true);
-        },
-        error: function (error) {
-            console.log("funzione chiamata quando la chiamata fallisce", error);
-            $("#alert-error").removeClass("hide");
-            $("#alert-error").text(error);
-        }
-    });
+
+    if (searchCat(voice)) {
+        $("#alert-error-cat-new").text("Categoria già esistente");
+        $("#alert-error-cat-new").removeClass("hide");
+        setTimeout(closeAlarm, 2000);
+    } else {
+        $.ajax({
+            method: "POST",
+            url: "api/renameCat.php",
+            data: JSON.stringify({ id: id, voice: voice }),
+            dataType: 'json',
+            success: function (data) {
+                $("#alert-success-cat").removeClass("hide");
+                setTimeout(closeAlarm, 1000);
+                categoryCall(true);
+            },
+            error: function (error) {
+                console.log("funzione chiamata quando la chiamata fallisce", error);
+                $("#alert-error").removeClass("hide");
+                $("#alert-error").text(error);
+            }
+        });
+    }
 }
 
 function modTypeVoice(id) {

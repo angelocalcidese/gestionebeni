@@ -55,7 +55,7 @@
                                     <input type="text" class="form-control input-data" id="input-modello">
                                 </div>
                                 <div class="mb-3">
-                                    <label for="input-sn" class="col-form-label">S.N./Targa/IMEI:</label>
+                                    <label for="input-sn" class="col-form-label">S.N. o IMEI:</label>
                                     <input type="text" class="form-control input-data" id="input-sn">
                                 </div>
                                 <div class="mb-3">
@@ -347,7 +347,8 @@
 
                         <div class="col border border-primary rounded pt-3 mx-1 ">
                             <div class="alert alert-primary mt-3 hide" id="alert-success-cat-new" role="alert">Categoria Creata con successo</div>
-                            <h6>Crea Categoria</h6>
+                            <div class="alert alert-danger mt-3 hide" id="alert-error-cat-new" role="alert"></div>
+                            <h6><i class="fa-regular fa-square-plus"></i> Crea Categoria</h6>
                             <ul class="list-group mb-3">
                                 <li class="list-group-item">
                                     <div class="row">
@@ -361,13 +362,13 @@
                                 </li>
                             </ul>
                             <div class="alert alert-primary mt-3 hide" id="alert-success-cat" role="alert">Categoria Modificata con successo</div>
-                            <h6>Modifica Nome Categorie</h6>
+                            <h6><i class="fa-solid fa-pen-to-square"></i> Modifica Nome Categorie</h6>
                             <ul class="list-group mb-3" id="list-cat-mod"></ul>
                         </div>
                         <div class="col border border-primary rounded pt-3 mx-1">
                             <div class="alert alert-primary mt-3 hide" id="alert-success-type-new" role="alert">Tipologia Creata con successo</div>
                             <div class="alert alert-danger mt-3 hide" id="alert-error-type-new" role="alert">Selezionare la Categoria</div>
-                            <h6>Crea Tipologia</h6>
+                            <h6><i class="fa-regular fa-square-plus"></i> Crea Tipologia</h6>
                             <ul class="list-group mb-3">
                                 <li class="list-group-item">
                                     <div class="row">
@@ -385,7 +386,7 @@
                                     </div>
                                 </li>
                             </ul>
-                            <h6>Filtra per</h6>
+                            <h6><i class="fa-solid fa-filter"></i> Filtra per</h6>
                             <ul class="list-group mb-3">
                                 <li class="list-group-item">
                                     <div class="row">
@@ -398,7 +399,7 @@
                                 </li>
                             </ul>
                             <div class="alert alert-primary mt-3 hide" id="alert-success-type" role="alert">Tipologia Modificata con successo</div>
-                            <h6>Modifica Nome Tipologie</h6>
+                            <h6><i class="fa-solid fa-pen-to-square"></i> Modifica Nome Tipologie</h6>
                             <ul class="list-group mb-3" id="list-type-mod"></ul>
                         </div>
                     </div>
