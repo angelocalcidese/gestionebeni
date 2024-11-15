@@ -471,7 +471,7 @@ function goods() {
                 activeOtherCatFilter();
             }
             $("#input-tipologia-filter").val(typefilter);
-
+            closeCarica();
         }
     });
 }
@@ -722,7 +722,7 @@ function filterType() {
     }
 }
 
-function typeCall() {
+function typeCall(refresh) {
     $.ajax({
         url: 'api/getType.php',
         dataType: 'json', //restituisce un oggetto JSON
@@ -743,7 +743,9 @@ function typeCall() {
                 }
             }
             filterType();
-            goods();
+            if (!refresh) {
+              goods();  
+            }
         }
     });
 }
@@ -858,7 +860,7 @@ function createTypeNew() {
                     setTimeout(closeAlarm, 1000);
                     $("#cat-select-type").val("");
                     $("#type-voice-new").val("");
-                    typeCall();
+                    typeCall(true);
                 },
                 error: function (error) {
                     console.log("funzione chiamata quando la chiamata fallisce", error);
@@ -1088,6 +1090,7 @@ document.querySelector('#import-csv').addEventListener('change', function () {
 });
 
 $(document).ready(function () {
+    openCarica();
     usersCall();
     categoryCall();
 

@@ -5,9 +5,13 @@ require_once "../../portale/utility.php";
 
 
     $data = getRequestDataBody();
-    $sql = "UPDATE `beni` SET `stato` = '" . $data["stato"] . "', `category` = '" . $data["category"] . "', `tipologia` = '" . $data["tipologia"] . "', `marca` = '" . $data["marca"] . "', `modello` = '" . $data["modello"] . "', 
+    $marca = str_replace("'", "\'", $data["marca"]);
+    $modello = str_replace("'", "\'", $data["modello"]);
+    $note = str_replace("'", "\'", $data["note"]);
+
+    $sql = "UPDATE `beni` SET `stato` = '" . $data["stato"] . "', `category` = '" . $data["category"] . "', `tipologia` = '" . $data["tipologia"] . "', `marca` = '" . $marca . "', `modello` = '" . $modello . "', 
     `seriale` = '" . $data["sn"] . "', `assegnatoa` = '" . $data["assegnatoa"] . "', `datainserimento` = '" . $data["datainserimento"] . "', `dataassegnazione` = '" . $data["dataassegnazione"] . "', 
-    `valoreacquisto` = '" . $data["valoreacquisto"] . "', `note` = '" . $data["note"] . "', `cespite` = '" . $data["cespite"] . "', `dataproduzione` = '" . $data["dataproduzione"] . "' WHERE `beni`.`id` = " . $data["id"] ;
+    `valoreacquisto` = '" . $data["valoreacquisto"] . "', `note` = '" . $note . "', `cespite` = '" . $data["cespite"] . "', `dataproduzione` = '" . $data["dataproduzione"] . "' WHERE `beni`.`id` = " . $data["id"] ;
 
     $result = $conn->query($sql);
 

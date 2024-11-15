@@ -7,9 +7,13 @@ require_once "../../portale/api/getUserCoockie.php";
 
     $data = getRequestDataBody();
 
+    $marca = str_replace("'", "\'", $data["marca"]);
+    $modello = str_replace("'", "\'", $data["modello"]);
+$note = str_replace("'", "\'", $data["note"]);
+
     $sql = "INSERT INTO `beni` (`id`, `category`, `tipologia`, `marca`, `modello`, `seriale`, `assegnatoa`, `datainserimento`, `dataassegnazione`, `valoreacquisto`, `stato`, `note`, `company`, `cespite`, `dataproduzione`) 
-    VALUES (NULL, '" . $data["category"] . "', '" . $data["tipologia"] . "', '" . $data["marca"] . "', '" . $data["modello"] . "', '" . $data["sn"] . "', 
-    '" . $data["assegnatoa"] . "', '" . $data["datainserimento"] . "', '" . $data["dataassegnazione"] . "', '" . $data["valoreacquisto"] . "', '" . $data["stato"] . "', '" . $data["note"] . "', 
+    VALUES (NULL, '" . $data["category"] . "', '" . $data["tipologia"] . "', '" . $marca . "', '" . $modello . "', '" . $data["sn"] . "', 
+    '" . $data["assegnatoa"] . "', '" . $data["datainserimento"] . "', '" . $data["dataassegnazione"] . "', '" . $data["valoreacquisto"] . "', '" . $data["stato"] . "', '" . $note . "', 
     '". $user_params->company. "', '" . $data["cespite"] . "', '" . $data["dataproduzione"] . "')";
 
     $result = $conn->query($sql);

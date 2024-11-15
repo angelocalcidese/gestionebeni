@@ -5,7 +5,8 @@ require_once "../../portale/utility.php";
 
 
     $data = getRequestDataBody();
-    $sql = "UPDATE `tipologiabene` SET `voce` = '". $data["voice"]. "' WHERE `tipologiabene`.`id` =" . $data["id"];
+$voice = str_replace("'", "\'", $data["voice"]);
+    $sql = "UPDATE `tipologiabene` SET `voce` = '". $voice . "' WHERE `tipologiabene`.`id` =" . $data["id"];
 
     $result = $conn->query($sql);
 

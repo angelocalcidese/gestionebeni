@@ -6,8 +6,8 @@ require_once "../../portale/api/getUserCoockie.php";
 
 
     $data = getRequestDataBody();
-    
-        $sql = "INSERT INTO `category_bene` (`id`, `voce`, `company`) VALUES (NULL, '". $data["catnew"]."', '". $user_params->company."')";
+$catnew = str_replace("'", "\'", $data["catnew"]);
+        $sql = "INSERT INTO `category_bene` (`id`, `voce`, `company`) VALUES (NULL, '". $catnew."', '". $user_params->company."')";
         $result = $conn->query($sql);
 
         $sql1 = "SELECT MAX(id) FROM `category_bene`";
